@@ -13,21 +13,35 @@ function gameLoop(){
     intercepcion();
 }
 
+function agregarHijo(){
+    serpiente.hijos[serpiente.numeroDeHijos] =  {
+        x: serpiente.hijos[serpiente.numeroDeHijos-1].x - serpiente.width,
+        y: serpiente.hijos[serpiente.numeroDeHijos-1].y - serpiente.height,
+    }
+
+   /* serpiente.hijos[serpiente.numeroDeHijos].push({
+        x: serpiente.hijos[serpiente.numeroDeHijos-1].x - serpiente.width,
+        y: serpiente.hijos[serpiente.numeroDeHijos-1].y - serpiente.height,
+    });*/
+    serpiente.numeroDeHijos = serpiente.numeroDeHijos + 1;
+    console.log(serpiente.hijos);  
+}
+
+
 
 function inicializar(){
 
     serpiente.x = Math.trunc(canvas.width/2);
     serpiente.y = Math.trunc(canvas.height/2);
-    serpiente.numeroDeHijos = 1;
+    serpiente.numeroDeHijos = 0;
     serpiente.width = ancho;
     serpiente.height = largo;
 
-    /*serpiente.hijos[serpiente.numeroDeHijos] = {
+    serpiente.hijos[0] = {
         x: serpiente.x - serpiente.width,
         y: serpiente.y - serpiente.height,
     }
-    serpiente.numeroDeHijos += 1; */
-    agregarHijo();
+    serpiente.numeroDeHijos += 1; 
 
     manzana.x = 400;
     manzana.y = 400;
@@ -56,13 +70,7 @@ let serpiente = {
 
 let direccion = "derecha";
 
-function agregarHijo(){
-    serpiente.numeroDeHijos += 1;
-    serpiente.hijos[serpiente.numeroDeHijos] = {
-        x: serpiente.hijos[serpiente.numeroDeHijos-1].x - serpiente.width,
-        y: serpiente.hijos[serpiente.numeroDeHijos-1].y - serpiente.height,
-    }
-}
+
 
 document.addEventListener("keydown", function cambiarDireccion(event){
 
@@ -93,9 +101,21 @@ function moverSerpiente(){
     }else if(direccion === "abajo"){
         serpiente.y = serpiente.y + serpiente.height;
     }
+    moverHijos();
 }
 
+function moverHijos(){
+    serpiente.hijos[0].x = serpiente.x - serpiente.width;
+    serpiente.hijos[0].y = serpiente.y;
+    let contador = 0;
+    serpiente.hijos.forEach(i => {
+        if(i !== serpiente.hijos[0]){
+            i.x = serpiente.hijos[contador].x;
+            i.y = serpiente.hijos[contador].y;
+        }
 
+    });
+}
 
 
 function moverManzana(){
@@ -165,6 +185,25 @@ function dibujar(){
         serpiente.width, 
         serpiente.height
         );
+    //Dibuja la hijos
+    contextoCanvas.fillStyle = "darkgreen";
+
+    contextoCanvas.fillRect(
+        serpiente.hijos[0].x, 
+        serpiente.hijos[0].y, 
+        serpiente.width, 
+        serpiente.height
+        );
+
+        serpiente.hijos.forEach(i => {
+
+            contextoCanvas.fillRect(
+                i.x, 
+                i.y, 
+                serpiente.width, 
+                serpiente.height
+                );
+        });
 
     //Dibuja la manzana
     contextoCanvas.fillStyle = "red";
