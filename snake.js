@@ -13,20 +13,6 @@ function gameLoop(){
     intercepcion();
 }
 
-function agregarHijo(){
-    serpiente.hijos[serpiente.numeroDeHijos] =  {
-        x: serpiente.hijos[serpiente.numeroDeHijos-1].x - serpiente.width,
-        y: serpiente.hijos[serpiente.numeroDeHijos-1].y - serpiente.height,
-    }
-
-   /* serpiente.hijos[serpiente.numeroDeHijos].push({
-        x: serpiente.hijos[serpiente.numeroDeHijos-1].x - serpiente.width,
-        y: serpiente.hijos[serpiente.numeroDeHijos-1].y - serpiente.height,
-    });*/
-    serpiente.numeroDeHijos = serpiente.numeroDeHijos + 1;
-    console.log(serpiente.hijos);  
-}
-
 
 
 function inicializar(){
@@ -38,8 +24,8 @@ function inicializar(){
     serpiente.height = largo;
 
     serpiente.hijos[0] = {
-        x: serpiente.x - serpiente.width,
-        y: serpiente.y - serpiente.height,
+        x: serpiente.x,
+        y: serpiente.y,
     }
     serpiente.numeroDeHijos += 1; 
 
@@ -49,6 +35,8 @@ function inicializar(){
     manzana.height = largo;
 
     direccion = "derecha";
+
+
 }
 
 
@@ -72,6 +60,8 @@ let direccion = "derecha";
 
 
 
+
+
 document.addEventListener("keydown", function cambiarDireccion(event){
 
     if((event.keyCode === 37 || event.keyCode === 65)&& direccion !== "derecha"){
@@ -89,7 +79,10 @@ document.addEventListener("keydown", function cambiarDireccion(event){
 
 
 
+
+
 function moverSerpiente(){
+    moverHijos();
     if(direccion === "izquierda"){
         serpiente.x = serpiente.x - serpiente.width;
     }else if(direccion === "derecha"){
@@ -101,21 +94,25 @@ function moverSerpiente(){
     }else if(direccion === "abajo"){
         serpiente.y = serpiente.y + serpiente.height;
     }
-    moverHijos();
+    
 }
+
+
+
+
 
 function moverHijos(){
-    serpiente.hijos[0].x = serpiente.x - serpiente.width;
-    serpiente.hijos[0].y = serpiente.y;
-    let contador = 0;
-    serpiente.hijos.forEach(i => {
-        if(i !== serpiente.hijos[0]){
-            i.x = serpiente.hijos[contador].x;
-            i.y = serpiente.hijos[contador].y;
-        }
 
-    });
+    for(let i = serpiente.hijos.length -1; i > 0; i--){
+        serpiente.hijos[i].x = serpiente.hijos[i-1].x;
+        serpiente.hijos[i].y = serpiente.hijos[i-1].y;
+    }
+
+    serpiente.hijos[0].x = serpiente.x;
+    serpiente.hijos[0].y = serpiente.y;
 }
+
+
 
 
 function moverManzana(){
@@ -132,9 +129,13 @@ function moverManzana(){
     manzana.x = posicionX;
     manzana.y = posicionY;
 }
+
+
+
+
+
+
 function intercepcion(){
-
-
 
     if(serpiente.x === manzana.x && serpiente.y === manzana.y){
         console.log();
@@ -172,6 +173,35 @@ Si ( y1+h1 < y2 ) ==> No hay colisión
 En otro caso ==> Hay colisión*/
 }
 
+
+
+
+function agregarHijo(){
+    serpiente.hijos[serpiente.numeroDeHijos] =  {
+        x: 0,
+        y: 0,
+    }
+    /*serpiente.hijos[serpiente.numeroDeHijos] =  {
+        x: serpiente.hijos[serpiente.numeroDeHijos-1].x - serpiente.width,
+        y: serpiente.hijos[serpiente.numeroDeHijos-1].y - serpiente.height,
+    }*/
+
+   /* serpiente.hijos[serpiente.numeroDeHijos].push({
+        x: serpiente.hijos[serpiente.numeroDeHijos-1].x - serpiente.width,
+        y: serpiente.hijos[serpiente.numeroDeHijos-1].y - serpiente.height,
+    });*/
+    serpiente.numeroDeHijos = serpiente.numeroDeHijos + 1;
+    console.log(`Tamaño: ${serpiente.hijos.length}`);
+    console.log(serpiente.hijos); 
+    serpiente.hijos.forEach(i => {
+        console.log(`i = ${i}`);
+    }); 
+}
+
+
+
+
+
 function dibujar(){
     contextoCanvas.clearRect(0,0,canvas.width, canvas.height);
 
@@ -186,24 +216,21 @@ function dibujar(){
         serpiente.height
         );
     //Dibuja la hijos
-    contextoCanvas.fillStyle = "darkgreen";
+    contextoCanvas.fillStyle = "lightgreen";
 
-    contextoCanvas.fillRect(
-        serpiente.hijos[0].x, 
-        serpiente.hijos[0].y, 
-        serpiente.width, 
-        serpiente.height
-        );
+    for(let i = serpiente.hijos.length -1; i > 0; i--){
 
-        serpiente.hijos.forEach(i => {
+        contextoCanvas.fillRect(
+            serpiente.hijos[i].x, 
+            serpiente.hijos[i].y, 
+            serpiente.width, 
+            serpiente.height
+            );
 
-            contextoCanvas.fillRect(
-                i.x, 
-                i.y, 
-                serpiente.width, 
-                serpiente.height
-                );
-        });
+    }
+
+
+
 
     //Dibuja la manzana
     contextoCanvas.fillStyle = "red";
@@ -216,3 +243,4 @@ function dibujar(){
 
 inicializar();
 setInterval(gameLoop, 1000/velocidad);
+
